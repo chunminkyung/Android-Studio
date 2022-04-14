@@ -72,7 +72,7 @@ public class login extends AppCompatActivity {
                loginProcess();
             }
         });
-    }//
+    }
 
     public void loginProcess(){
         RequestQueue requestQueue=null;
