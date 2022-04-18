@@ -26,7 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:textSize="15dp"
-            android:hint="0000-00-00 형식으로 입력" />
+            android:hint="0000-00-00 형식으로 입력"
+            android:inputType="date"/>
 
         <Button
             android:id="@+id/bnt_work"
@@ -36,18 +37,19 @@
             android:layout_gravity="center"/>
 
         <TextView
-            android:id="@+id/driverWorkText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/workCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
             android:id="@+id/myWork"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/work_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,13 +1,18 @@
 package com.example.practice;
 
 import androidx.annotation.ArrayRes;
+import androidx.annotation.ColorRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -123,33 +128,56 @@ public class driverWork extends AppCompatActivity {
         };
         request.setShouldCache(false);
         requestQueue.add(request);
-        Button button=findViewById(R.id.bnt_work);
-        button.setOnClickListener(new View.OnClickListener(){
 
+
+//        Button button=findViewById(R.id.bnt_work);
+        binding.bntWork.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 input=binding.userInput.getText().toString();
                 Log.e("userInput",String.valueOf(input));
-                //binding.driverWorkText.setText(input);
+                //binding.myWork.setText(input);
+
+                //사용자 입력 값이 달력에 없는 값일 때 사용 변수
+                String[] splitInput=input.split("-");
+                String[] splitTime=time.split("-");
+
+                //Calender
+                Calendar calendar=Calendar.getInstance();
+//                calendar.add(Calendar.MONTH,4);
+                int dayOfMonth=calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                Log.e("dayOfMonth",String.valueOf(dayOfMonth));
 
                 //dateArray 사이즈에 따라 반복문 실행
-                for (i=0; i<dateArray.size(); i++){
+                for (int i=0; i<dateArray.size(); i++){
                     if (input.equals(dateArray.get(i))){
                         //입력한 값과 date에 있는 값과 같을 시 해당 날짜 출력
-                        binding.workCheck.setText(dateArray.get(i));
-                    }
-                    //근무 정보 for문
-                    for (i=0; i<statusArray.size(); i++){
-                        if (statusArray.contains("WORK")){
+                        Log.e("date", "나의 월 근무일!");
+                        if (statusArray.get(i).contains("WORK")){
                             binding.myWork.setText("근무일 입니다.");
-                        }else if (statusArray.contains("LEAVE")){
+                            binding.myWork.setTextColor(Color.BLACK);
+                        }else if (statusArray.get(i).contains("LEAVE")){
                             binding.myWork.setText("휴무일 입니다.");
-                        }else if (statusArray.contains("ANNUAL")) {
+                            binding.myWork.setTextColor(Color.RED);
+                        }else if (statusArray.get(i).contains("ANNUAL")) {
                             binding.myWork.setText("연차입니다.");
-                        }else{
-                            binding.myWork.setText("다른 조의 근무일 입니다.");
+                            binding.myWork.setTextColor(Color.BLUE);
                         }
+                        binding.workId.setText("근무ID : "+idArray.get(i));
+                        break;
+                    }else{
+                        binding.myWork.setText("다른 조의 근무일 입니다.");
+                        binding.myWork.setTextColor(Color.GRAY);
                     }
+
+                        if (!splitInput[1].equals(splitTime[1])){
+                            Log.e("test",String.valueOf(splitInput[1]));
+                            Toast.makeText(getApplicationContext(),"이번 달 근무일정만 확인 가능합니다.\n달을 정확히 입력해주세요", Toast.LENGTH_SHORT).show();
+                            binding.userInput.setText(null);
+                        }/*else if (splitInput[2]){
+
+                        }*/
                 }
             }
         });
