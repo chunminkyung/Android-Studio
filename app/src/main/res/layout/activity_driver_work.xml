@@ -51,5 +51,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+        <Button
+            android:id="@+id/move_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="달력 통해 확인하기 이동"
+            android:layout_gravity="center"/>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

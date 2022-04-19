@@ -3,7 +3,9 @@ package com.example.practice;
 import androidx.annotation.ArrayRes;
 import androidx.annotation.ColorRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ActivityChooserView;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -129,7 +131,6 @@ public class driverWork extends AppCompatActivity {
         request.setShouldCache(false);
         requestQueue.add(request);
 
-
 //        Button button=findViewById(R.id.bnt_work);
         binding.bntWork.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -141,10 +142,12 @@ public class driverWork extends AppCompatActivity {
                 //사용자 입력 값이 달력에 없는 값일 때 사용 변수
                 String[] splitInput=input.split("-");
                 String[] splitTime=time.split("-");
+                //String인 splitInput을 dayOfMont의 integer형식으로 변환해주어야 비교가 가능하다.
+                int sInput=Integer.parseInt(splitInput[2]);
 
-                //Calender
+                //Calender / 현재 월의 말일 구하기
                 Calendar calendar=Calendar.getInstance();
-//                calendar.add(Calendar.MONTH,4);
+//                calendar.add(Calendar.MONTH,4);        -> 현재 날짜에서 4달을 더해라
                 int dayOfMonth=calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
                 calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
                 Log.e("dayOfMonth",String.valueOf(dayOfMonth));
@@ -170,17 +173,30 @@ public class driverWork extends AppCompatActivity {
                         binding.myWork.setText("다른 조의 근무일 입니다.");
                         binding.myWork.setTextColor(Color.GRAY);
                     }
-
-                        if (!splitInput[1].equals(splitTime[1])){
-                            Log.e("test",String.valueOf(splitInput[1]));
-                            Toast.makeText(getApplicationContext(),"이번 달 근무일정만 확인 가능합니다.\n달을 정확히 입력해주세요", Toast.LENGTH_SHORT).show();
-                            binding.userInput.setText(null);
-                        }/*else if (splitInput[2]){
-
-                        }*/
+                }
+                if (!splitInput[1].equals(splitTime[1])){
+                    Log.e("test",String.valueOf(splitInput[1]));
+                    Toast.makeText(getApplicationContext(),"이번 달 근무일정만 확인 가능합니다.\n정확한 일자를 입력해주세요", Toast.LENGTH_SHORT).show();
+                    binding.userInput.setText(null);
+                }else if (sInput>=dayOfMonth){
+                    Log.e("test2",String.valueOf(splitInput[2]));
+                    Toast.makeText(getApplicationContext(),"정확한 일자를 입력해주세요.",Toast.LENGTH_SHORT).show();
+                    binding.userInput.setText(null);
+                }else if (sInput==0 && sInput==00){
+                    Toast.makeText(getApplicationContext(),"정확한 일자를 입력해주세요.",Toast.LENGTH_SHORT).show();
+                    binding.userInput.setText(null);
                 }
             }
         });
 
+        binding.movePage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent_move=new Intent(driverWork.this,datepicker.class);
+                startActivity(intent_move);
+                finish();
+                Toast.makeText(getApplicationContext(),"이동",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
