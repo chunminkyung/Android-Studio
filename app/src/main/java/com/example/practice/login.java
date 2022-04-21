@@ -58,7 +58,9 @@ public class login extends AppCompatActivity {
 //        map.put("직업", "개발자");
 //
 //        Log.e("map 결과", map.toString());
-
+        int a = 1;
+        String b = "2";
+        Log.e("int 더하기 string?", a+b);
         //1단계
         //버튼을 눌렀을때, 사용자가 입력한 값 (아이디, 비밀번호)를 로그에 띄우기
         Button button=findViewById(R.id.btn_login);

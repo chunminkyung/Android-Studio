@@ -2,18 +2,22 @@ package com.example.practice;
 
 import androidx.annotation.ArrayRes;
 import androidx.annotation.ColorRes;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ActivityChooserView;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -34,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Locale;
@@ -46,6 +51,7 @@ public class driverWork extends AppCompatActivity {
     private ArrayList<String>idArray;
     private ArrayList<String>dateArray;
     private ArrayList<String>statusArray;
+    int year,month,dayOfMonth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,14 +195,30 @@ public class driverWork extends AppCompatActivity {
             }
         });
 
+        Calendar calendar=new GregorianCalendar();
+        year=calendar.get(Calendar.YEAR);
+        month=calendar.get(Calendar.MONTH);
+        dayOfMonth=calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, year, month, dayOfMonth);
+
         binding.movePage.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
-                Intent intent_move=new Intent(driverWork.this,datepicker.class);
-                startActivity(intent_move);
+                datePickerDialog.show();
+/*                Intent intent=new Intent(driverWork.this,datepicker.class);
+                startActivity(intent);
                 finish();
-                Toast.makeText(getApplicationContext(),"이동",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"이동",Toast.LENGTH_SHORT).show();*/
             }
         });
-    }
+    }//end of onCrete
+
+    private DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            Toast.makeText(getApplicationContext(), year + "년" + (monthOfYear+1) + "월" + dayOfMonth +"일", Toast.LENGTH_SHORT).show();
+        }
+    };
 }
