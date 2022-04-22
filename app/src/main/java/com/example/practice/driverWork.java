@@ -52,6 +52,7 @@ public class driverWork extends AppCompatActivity {
     private ArrayList<String>dateArray;
     private ArrayList<String>statusArray;
     int year,month,dayOfMonth;
+    String datestring;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,8 +184,8 @@ public class driverWork extends AppCompatActivity {
                 if (!splitInput[1].equals(splitTime[1])){
                     Log.e("test",String.valueOf(splitInput[1]));
                     Toast.makeText(getApplicationContext(),"이번 달 근무일정만 확인 가능합니다.\n정확한 일자를 입력해주세요", Toast.LENGTH_SHORT).show();
-                    binding.userInput.setText(null);
-                }else if (sInput>=dayOfMonth){
+                    binding.userInput.setText("");
+                }else if (sInput>dayOfMonth){
                     Log.e("test2",String.valueOf(splitInput[2]));
                     Toast.makeText(getApplicationContext(),"정확한 일자를 입력해주세요.",Toast.LENGTH_SHORT).show();
                     binding.userInput.setText(null);
@@ -195,30 +196,54 @@ public class driverWork extends AppCompatActivity {
             }
         });
 
+        //날짜 불러오기기
         Calendar calendar=new GregorianCalendar();
+        //Calendar calendar = Calendar.getInstance();
         year=calendar.get(Calendar.YEAR);
         month=calendar.get(Calendar.MONTH);
         dayOfMonth=calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, year, month, dayOfMonth);
+        //year, month, dayofMonth를 지정할 시, DatePickerDialog에 default로 선택되어져있는 날짜가 set 된다.
 
         binding.movePage.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
                 datePickerDialog.show();
-/*                Intent intent=new Intent(driverWork.this,datepicker.class);
-                startActivity(intent);
-                finish();
-                Toast.makeText(getApplicationContext(),"이동",Toast.LENGTH_SHORT).show();*/
             }
         });
+        
     }//end of onCrete
+
 
     private DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            Toast.makeText(getApplicationContext(), year + "년" + (monthOfYear+1) + "월" + dayOfMonth +"일", Toast.LENGTH_SHORT).show();
+            datestring=String.format("%d-%02d-%02d",year,(monthOfYear+1),dayOfMonth);
+            Toast.makeText(getApplicationContext(), datestring, Toast.LENGTH_SHORT).show();
+            for (int i=0; i<dateArray.size(); i++) {
+                if (datestring.equals(dateArray.get(i))) {
+                    //입력한 값과 date에 있는 값과 같을 시 해당 날짜 출력
+                    Log.e("date", "나의 월 근무일!");
+                    if (statusArray.get(i).contains("WORK")) {
+                        binding.myWork.setText("근무일 입니다.");
+                        binding.myWork.setTextColor(Color.BLACK);
+                    } else if (statusArray.get(i).contains("LEAVE")) {
+                        binding.myWork.setText("휴무일 입니다.");
+                        binding.myWork.setTextColor(Color.RED);
+                    } else if (statusArray.get(i).contains("ANNUAL")) {
+                        binding.myWork.setText("연차입니다.");
+                        binding.myWork.setTextColor(Color.BLUE);
+                    }
+                    binding.workId.setText("근무ID : " + idArray.get(i));
+                    break;
+                } else {
+                    binding.myWork.setText("다른 조의 근무일 입니다.");
+                    binding.myWork.setTextColor(Color.GRAY);
+                }
+            }
         }
     };
+
 }
