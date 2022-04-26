@@ -13,9 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Practice"
         android:usesCleartextTraffic="true">
-        <activity
-            android:name=".datepicker"
-            android:exported="false" />
             <!--    .datepicker   -->
         <activity
             android:name=".driverWork"

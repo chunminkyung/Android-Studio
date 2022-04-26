@@ -6,7 +6,9 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ActivityChooserView;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
@@ -47,12 +49,14 @@ import java.util.Map;
 public class driverWork extends AppCompatActivity {
     private ActivityDriverWorkBinding binding;
     int i;
+    int sInput;
     String input;
     private ArrayList<String>idArray;
     private ArrayList<String>dateArray;
     private ArrayList<String>statusArray;
     int year,month,dayOfMonth;
     String datestring;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +83,34 @@ public class driverWork extends AppCompatActivity {
         SharedPreferences pref=getSharedPreferences("mine",MODE_PRIVATE);
         String token=pref.getString("token","");
         Log.e("token",String.valueOf(token));
+
+        AlertDialog.Builder builder=new AlertDialog.Builder(driverWork.this);
+        builder.setMessage("본인의 근무일을 선택해주세요");
+
+        //왼쪽 버튼
+        builder.setNegativeButton("취소",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Log.e("test","취소");
+//                        Intent intent=new Intent(driverWork.this,driverWork.class);
+//                        startActivity(intent);
+//                        finish();
+                        dialog.dismiss();
+                    }
+                });
+        //오른족 버튼
+        builder.setPositiveButton("확인",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Log.e("test","확인");
+                        dialog.dismiss();
+                    }
+                });
+
+        dialog = builder.create();
+
 
         //Volley 통신 사용
         RequestQueue requestQueue=null;
@@ -146,53 +178,70 @@ public class driverWork extends AppCompatActivity {
                 Log.e("userInput",String.valueOf(input));
                 //binding.myWork.setText(input);
 
+
                 //사용자 입력 값이 달력에 없는 값일 때 사용 변수
-                String[] splitInput=input.split("-");
                 String[] splitTime=time.split("-");
-                //String인 splitInput을 dayOfMont의 integer형식으로 변환해주어야 비교가 가능하다.
-                int sInput=Integer.parseInt(splitInput[2]);
+                if (input.equals("")){
+                    Toast.makeText(getApplicationContext(),"날짜를 입력해주세요.",Toast.LENGTH_SHORT).show();
+                }else{
+                    String[] splitInput=input.split("-");
+                    sInput=Integer.parseInt(splitInput[2]);
 
-                //Calender / 현재 월의 말일 구하기
-                Calendar calendar=Calendar.getInstance();
+                    if (!splitInput[1].equals(splitTime[1])){
+                        Log.e("test",String.valueOf(splitInput[1]));
+                        Toast.makeText(getApplicationContext(),"이번 달 근무일정만 확인 가능합니다.\n정확한 일자를 입력해주세요", Toast.LENGTH_SHORT).show();
+                        binding.userInput.setText("");
+                        binding.workId.setVisibility(View.INVISIBLE);
+                        binding.myWork.setVisibility(View.INVISIBLE);
+                    }else if (sInput>dayOfMonth){
+                        Log.e("test2",String.valueOf(splitInput[2]));
+                        Toast.makeText(getApplicationContext(),"정확한 일자를 입력해주세요.",Toast.LENGTH_SHORT).show();
+                        binding.userInput.setText("");
+                        binding.workId.setVisibility(View.INVISIBLE);
+                        binding.myWork.setVisibility(View.INVISIBLE);
+                    } else if (sInput==0){
+                        Toast.makeText(getApplicationContext(),"정확한 일자를 입력해주세요.",Toast.LENGTH_SHORT).show();
+                        binding.userInput.setText("");
+                        binding.workId.setVisibility(View.INVISIBLE);
+                        binding.myWork.setVisibility(View.INVISIBLE);
+                    }
+
+                    //Calender / 현재 월의 말일 구하기
+                    Calendar calendar=Calendar.getInstance();
 //                calendar.add(Calendar.MONTH,4);        -> 현재 날짜에서 4달을 더해라
-                int dayOfMonth=calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-                calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-                Log.e("dayOfMonth",String.valueOf(dayOfMonth));
+                    int dayOfMonth=calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                    Log.e("dayOfMonth",String.valueOf(dayOfMonth));
 
-                //dateArray 사이즈에 따라 반복문 실행
-                for (int i=0; i<dateArray.size(); i++){
-                    if (input.equals(dateArray.get(i))){
-                        //입력한 값과 date에 있는 값과 같을 시 해당 날짜 출력
-                        Log.e("date", "나의 월 근무일!");
-                        if (statusArray.get(i).contains("WORK")){
-                            binding.myWork.setText("근무일 입니다.");
-                            binding.myWork.setTextColor(Color.BLACK);
-                        }else if (statusArray.get(i).contains("LEAVE")){
-                            binding.myWork.setText("휴무일 입니다.");
-                            binding.myWork.setTextColor(Color.RED);
-                        }else if (statusArray.get(i).contains("ANNUAL")) {
-                            binding.myWork.setText("연차입니다.");
-                            binding.myWork.setTextColor(Color.BLUE);
+                    //dateArray 사이즈에 따라 반복문 실행
+                    for (int i=0; i<dateArray.size(); i++){
+                        if (input.equals(dateArray.get(i))){
+                            //입력한 값과 date에 있는 값과 같을 시 해당 날짜 출력
+                            Log.e("date", "나의 월 근무일!");
+                            if (statusArray.get(i).contains("WORK")){
+                                binding.myWork.setText("근무일 입니다.");
+                                binding.myWork.setTextColor(Color.BLACK);
+                            }else if (statusArray.get(i).contains("LEAVE")){
+                                binding.myWork.setText("휴무일 입니다.");
+                                binding.myWork.setTextColor(Color.RED);
+                            }else if (statusArray.get(i).contains("ANNUAL")) {
+                                binding.myWork.setText("연차입니다.");
+                                binding.myWork.setTextColor(Color.BLUE);
+                            }
+                            binding.workId.setText("근무ID : "+idArray.get(i));
+                            binding.workId.setVisibility(View.VISIBLE);
+                            binding.myWork.setVisibility(View.VISIBLE);
+                            break;
+                        }else{
+                            binding.myWork.setText("다른 조의 근무일 입니다.");
+                            binding.myWork.setTextColor(Color.GRAY);
+                            binding.workId.setVisibility(View.INVISIBLE);
                         }
-                        binding.workId.setText("근무ID : "+idArray.get(i));
-                        break;
-                    }else{
-                        binding.myWork.setText("다른 조의 근무일 입니다.");
-                        binding.myWork.setTextColor(Color.GRAY);
                     }
                 }
-                if (!splitInput[1].equals(splitTime[1])){
-                    Log.e("test",String.valueOf(splitInput[1]));
-                    Toast.makeText(getApplicationContext(),"이번 달 근무일정만 확인 가능합니다.\n정확한 일자를 입력해주세요", Toast.LENGTH_SHORT).show();
-                    binding.userInput.setText("");
-                }else if (sInput>dayOfMonth){
-                    Log.e("test2",String.valueOf(splitInput[2]));
-                    Toast.makeText(getApplicationContext(),"정확한 일자를 입력해주세요.",Toast.LENGTH_SHORT).show();
-                    binding.userInput.setText(null);
-                }else if (sInput==0 && sInput==00){
-                    Toast.makeText(getApplicationContext(),"정확한 일자를 입력해주세요.",Toast.LENGTH_SHORT).show();
-                    binding.userInput.setText(null);
-                }
+
+                //String인 splitInput을 dayOfMont의 integer형식으로 변환해주어야 비교가 가능하다.
+
             }
         });
 
@@ -222,9 +271,14 @@ public class driverWork extends AppCompatActivity {
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             datestring=String.format("%d-%02d-%02d",year,(monthOfYear+1),dayOfMonth);
             Toast.makeText(getApplicationContext(), datestring, Toast.LENGTH_SHORT).show();
-            for (int i=0; i<dateArray.size(); i++) {
+            Log.e("dateString",datestring);
+            //dialogshow 선언
+            Boolean dialogshow = true;
+            for (int i = 0; i<dateArray.size(); i++) {
+                //달력에서 선택한 날짜와 값에 존재하는 날짜가 일치하면
                 if (datestring.equals(dateArray.get(i))) {
-                    //입력한 값과 date에 있는 값과 같을 시 해당 날짜 출력
+                    //dialogshow 출력X
+                    dialogshow = false;
                     Log.e("date", "나의 월 근무일!");
                     if (statusArray.get(i).contains("WORK")) {
                         binding.myWork.setText("근무일 입니다.");
@@ -237,13 +291,23 @@ public class driverWork extends AppCompatActivity {
                         binding.myWork.setTextColor(Color.BLUE);
                     }
                     binding.workId.setText("근무ID : " + idArray.get(i));
+                    binding.workId.setVisibility(View.VISIBLE);
+                    binding.myWork.setVisibility(View.VISIBLE);
                     break;
                 } else {
-                    binding.myWork.setText("다른 조의 근무일 입니다.");
-                    binding.myWork.setTextColor(Color.GRAY);
+                    //dialogshow 출력
+                    dialogshow = true;
                 }
+            }
+
+            if (dialogshow) {
+                dialog.show();
+                binding.myWork.setVisibility(View.INVISIBLE);
+                binding.workId.setVisibility(View.INVISIBLE);
+                Log.e("test","else");
             }
         }
     };
+
 
 }
