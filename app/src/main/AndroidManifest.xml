@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".myApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -13,14 +14,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Practice"
         android:usesCleartextTraffic="true">
-            <!--    .datepicker   -->
+        <activity
+            android:name=".CheckSchedule"
+            android:exported="false" />
+        <!-- .datepicker -->
         <activity
             android:name=".driverWork"
             android:exported="false" />
         <activity
             android:name=".login"
             android:exported="true">
-            <!--     .login     -->
+
+            <!-- .login -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

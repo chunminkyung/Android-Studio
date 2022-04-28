@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -39,6 +41,8 @@ import java.util.Map;
 public class login extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private String ID,PW;
+    Boolean loginChecked;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,23 +50,21 @@ public class login extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        //sharedpreference 설명
+        SharedPreferences pref= getSharedPreferences("mine",MODE_PRIVATE);
+        //위 코드의 NAME은 한 sharedpreference의 이름
+        editor=pref.edit();
+        //sharedpreferences.editor는 sharedpreference에 값을 입력하기위해 사용하는 코드
 
-        //button 기능
-        //1. 사용자가 입력한 값을 string 변수에 저장 (아이디, 비밀번호 둘 다)
-        //2. 버튼을 눌렀을때 서버와 통신 시작! --> 버튼을 눌렀을 때 로그인 과정이 시작되기 때문
 
-        //Map , k -> key v -> value
-//        Map<String, String> map = new HashMap<>();
-//        map.put("이름", "민경");
-//        map.put("성별", "여자");
-//        map.put("직업", "개발자");
-//
-//        Log.e("map 결과", map.toString());
-        int a = 1;
-        String b = "2";
-        Log.e("int 더하기 string?", a+b);
-        //1단계
-        //버튼을 눌렀을때, 사용자가 입력한 값 (아이디, 비밀번호)를 로그에 띄우기
+        Boolean autoLogin=pref.getBoolean("autoLogin",false);
+        Log.e("autoLogin",autoLogin+"");
+        if (autoLogin){
+            String autoID=pref.getString("id","null");
+            String autoPW=pref.getString("pw","null");
+            loginProcess(autoID,autoPW);
+        }
+
         Button button=findViewById(R.id.btn_login);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,19 +73,36 @@ public class login extends AppCompatActivity {
                  PW=binding.etPw.getText().toString();
                Log.e("login","ID : "+ID+"   PW : "+PW);
 
-               loginProcess();
+               loginProcess(ID,PW);
+            }
+        });
+
+        loginChecked=false;
+
+        //로그인 정보 기억하기
+        binding.autoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    loginChecked=true;
+                    Log.e("isChecked",isChecked+"");
+                }else{
+                    loginChecked=false;
+                    editor.clear();
+                    editor.commit();
+                }
             }
         });
     }
 
-    public void loginProcess(){
+    public void loginProcess(String ID,String PW){
         RequestQueue requestQueue=null;
 
         if(requestQueue==null){
             requestQueue= Volley.newRequestQueue(this);
         }
 
-        String url="http://dev.kiki-bus.com/auth/login";
+        String url=myApplication.api_url+"auth/login";
         Log.e("url",url);
 
         Map<String,String> map = new HashMap<>();
@@ -122,17 +141,19 @@ public class login extends AppCompatActivity {
 //                        int status=response.getInt("status");
 //                        Log.e("status",String.valueOf(status));
 
-                        //sharedpreference 설명
-                        SharedPreferences pref= getSharedPreferences("mine",MODE_PRIVATE);
-                        //위 코드의 NAME은 한 sharedpreference의 이름
-                        SharedPreferences.Editor editor=pref.edit();
-                        //sharedpreferences.editor는 sharedpreference에 값을 입력하기위해 사용하는 코드
-                        editor.putString("name", "minkyung").apply();
 
                         editor.putString("name",name).apply();
                         editor.putString("token",token).apply();
                         editor.putString("role",role).apply();
                         editor.putString("companyName",companyName).apply();
+
+                        Log.e("loginChecked",loginChecked+"");
+                        if (loginChecked){
+                            editor.putString("id",ID).apply();
+                            editor.putString("pw",PW).apply();
+                            //다음 로그인 화면 전환 시 자동 로그인 여부를 true로 저장
+                            editor.putBoolean("autoLogin",true).apply();
+                        }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -160,6 +181,8 @@ public class login extends AppCompatActivity {
         );
         request.setShouldCache(false);
         requestQueue.add(request);
+
+
 
     }
 }

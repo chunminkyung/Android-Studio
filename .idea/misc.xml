@@ -11,8 +11,11 @@
         <entry key="..\:/Users/cmk/AndroidStudioProjects/practice/app/src/main/res/layout/activity_driver_work.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/cmk/AndroidStudioProjects/practice/app/src/main/res/layout/activity_login.xml" value="0.16" />
         <entry key="..\:/Users/cmk/AndroidStudioProjects/practice/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="app/src/main/res/layout/activity_check_schedule.xml" value="0.33177083333333335" />
         <entry key="app/src/main/res/layout/activity_datepicker.xml" value="0.33177083333333335" />
         <entry key="app/src/main/res/layout/activity_driver_work.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
       </map>
     </option>
   </component>

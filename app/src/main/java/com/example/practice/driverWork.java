@@ -119,7 +119,7 @@ public class driverWork extends AppCompatActivity {
             requestQueue= Volley.newRequestQueue(this);
         }
 
-        String url="http://dev.kiki-bus.com/driver/work?yearMonth="+ time;
+        String url=myApplication.api_url+"driver/work?yearMonth="+ time;
         Log.e("url",url);
         JsonObjectRequest request=new JsonObjectRequest(
                 Request.Method.GET,
@@ -177,7 +177,7 @@ public class driverWork extends AppCompatActivity {
                 input=binding.userInput.getText().toString();
                 Log.e("userInput",String.valueOf(input));
                 //binding.myWork.setText(input);
-
+                Log.e("dayofmonth",dayOfMonth+"");
 
                 //사용자 입력 값이 달력에 없는 값일 때 사용 변수
                 String[] splitTime=time.split("-");
@@ -187,14 +187,20 @@ public class driverWork extends AppCompatActivity {
                     String[] splitInput=input.split("-");
                     sInput=Integer.parseInt(splitInput[2]);
 
+                    //Calender / 현재 월의 말일 구하기
+                    Calendar calendar=Calendar.getInstance();
+//                calendar.add(Calendar.MONTH,4);        -> 현재 날짜에서 4달을 더해라
+                    int maxDayOfMonth=calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    Log.e("maxDayOfMonth",String.valueOf(maxDayOfMonth));
+
                     if (!splitInput[1].equals(splitTime[1])){
-                        Log.e("test",String.valueOf(splitInput[1]));
+                        Log.e("사용자가 입력한 월",String.valueOf(splitInput[1]));
                         Toast.makeText(getApplicationContext(),"이번 달 근무일정만 확인 가능합니다.\n정확한 일자를 입력해주세요", Toast.LENGTH_SHORT).show();
                         binding.userInput.setText("");
                         binding.workId.setVisibility(View.INVISIBLE);
                         binding.myWork.setVisibility(View.INVISIBLE);
-                    }else if (sInput>dayOfMonth){
-                        Log.e("test2",String.valueOf(splitInput[2]));
+                    }else if (sInput>maxDayOfMonth){
+                        Log.e("test2",String.valueOf(sInput));
                         Toast.makeText(getApplicationContext(),"정확한 일자를 입력해주세요.",Toast.LENGTH_SHORT).show();
                         binding.userInput.setText("");
                         binding.workId.setVisibility(View.INVISIBLE);
@@ -206,12 +212,6 @@ public class driverWork extends AppCompatActivity {
                         binding.myWork.setVisibility(View.INVISIBLE);
                     }
 
-                    //Calender / 현재 월의 말일 구하기
-                    Calendar calendar=Calendar.getInstance();
-//                calendar.add(Calendar.MONTH,4);        -> 현재 날짜에서 4달을 더해라
-                    int dayOfMonth=calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-                    calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-                    Log.e("dayOfMonth",String.valueOf(dayOfMonth));
 
                     //dateArray 사이즈에 따라 반복문 실행
                     for (int i=0; i<dateArray.size(); i++){
@@ -308,6 +308,13 @@ public class driverWork extends AppCompatActivity {
             }
         }
     };
-
+    //뒤로 가기 버튼
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
 }
